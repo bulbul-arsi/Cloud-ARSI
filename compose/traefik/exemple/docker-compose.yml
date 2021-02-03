@@ -4,30 +4,36 @@ services:
   whoami:
     image: containous/whoami
 
+    networks:
+      - frontend
+
     deploy:
       restart_policy:
         condition: on-failure
       labels:
+        # ATTENTION, pensez a changer chaque "whoami" par le nom de votre service
         - "traefik.enable=true"
         - "traefik.docker.network=frontend"
 
+        # Changer l'adresse ici pour le http
         - "traefik.http.routers.whoami-http.rule=Host(`whoami.arsi.tibillet.com`)"
         - "traefik.http.routers.whoami-http.entrypoints=entrypoints-http"
         - "traefik.http.routers.whoami-http.middlewares=redirect"
+
+        # Ligne pour forcer le redirect vers le https si le http est demandé.
         - "traefik.http.middlewares.redirect.redirectscheme.scheme=https"
 
+        # Changer l'adresse ici pour le https
         - "traefik.http.routers.whoami-https.rule=Host(`whoami.arsi.tibillet.com`)"
         - "traefik.http.routers.whoami-https.entrypoints=entrypoints-https"
         - "traefik.http.routers.whoami-https.tls.certresolver=myresolver"
 
+        # par default, Traefik prend le premier port exposé comme port http
+        # sinon, utiliser - "traefik.http.services.whoami.loadbalancer.server.port=8384"
         - "traefik.http.services.whoami.loadbalancer.server.port=80"
 
-    # par default, Traefik prend le premier port exposé comme port http
-    # sinon, utiliser - "traefik.http.services.whoami.loadbalancer.server.port=8384"
-    # expose:
-      # - 8384
-    networks:
-      - frontend
+        # Pour ne pas basculer de conteneur si le cookie est le même :
+        - "traefik.http.services.whoami.loadbalancer.sticky.cookie=true"
 
 networks:
   frontend:
