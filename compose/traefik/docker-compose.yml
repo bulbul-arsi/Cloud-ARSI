@@ -2,7 +2,7 @@ version: '3'
 services:
   traefik:
     image: "traefik:chevrotin"
-    container_name: "traefik"
+    hostname: "traefik"
     command:
       - "--log.level=DEBUG"
       - "--api.insecure=true"
