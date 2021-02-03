@@ -1,0 +1,38 @@
+version: '3'
+services:
+  traefik:
+    image: "traefik:chevrotin"
+    container_name: "traefik"
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      
+      - "--providers.docker=true"
+      - "--providers.docker.swarmMode=true"
+      - "--providers.docker.network=frontend"
+      - "--providers.docker.exposedbydefault=false"
+
+      - "--entrypoints.entrypoints-https.address=:443"
+      - "--entrypoints.entrypoints-http.address=:80"
+
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=jturbeaux@pm.me"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+      # - "8080:8080
+    volumes:
+      - "./letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    restart: always
+    networks:
+      - frontend
+
+
+networks:
+  frontend:
+    external: true
+
+
+# A lancer avec : docker stack deploy -c docker-compose.yml traefik
