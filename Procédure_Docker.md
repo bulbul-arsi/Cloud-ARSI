@@ -38,7 +38,14 @@ sudo usermod -aG docker $USER
 ```
 ## Instalation Docker Engine :
 
-1 -
+1 - Mettez à jour l'index du package apt et installez la dernière version de Docker Engine :
 ```
  $ sudo apt-get update
  $ sudo apt-get install docker-ce docker-ce-cli containerd.io
+```
+
+2 - Vérifiez que Docker Engine est correctement installé en exécutant l'image "hello-world" :
+```
+$ sudo docker run hello-world
+```
+
