@@ -28,7 +28,12 @@ services:
     restart: always
     networks:
       - frontend
-
+    deploy:
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - node.role == manager
 
 networks:
   frontend:

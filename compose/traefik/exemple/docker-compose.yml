@@ -3,20 +3,24 @@ version: "3"
 services:
   whoami:
     image: containous/whoami
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=frontend"
 
-      - "traefik.http.routers.whoami-http.rule=Host(`whoami.arsi.tibillet.com`)"
-      - "traefik.http.routers.whoami-http.entrypoints=entrypoints-http"
-      - "traefik.http.routers.whoami-http.middlewares=redirect"
-      - "traefik.http.middlewares.redirect.redirectscheme.scheme=https"
+    deploy:
+      restart_policy:
+        condition: on-failure
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=frontend"
 
-      - "traefik.http.routers.whoami-https.rule=Host(`whoami.arsi.tibillet.com`)"
-      - "traefik.http.routers.whoami-https.entrypoints=entrypoints-https"
-      - "traefik.http.routers.whoami-https.tls.certresolver=myresolver"
+        - "traefik.http.routers.whoami-http.rule=Host(`whoami.arsi.tibillet.com`)"
+        - "traefik.http.routers.whoami-http.entrypoints=entrypoints-http"
+        - "traefik.http.routers.whoami-http.middlewares=redirect"
+        - "traefik.http.middlewares.redirect.redirectscheme.scheme=https"
 
-      - "traefik.http.services.whoami.loadbalancer.server.port=80"
+        - "traefik.http.routers.whoami-https.rule=Host(`whoami.arsi.tibillet.com`)"
+        - "traefik.http.routers.whoami-https.entrypoints=entrypoints-https"
+        - "traefik.http.routers.whoami-https.tls.certresolver=myresolver"
+
+        - "traefik.http.services.whoami.loadbalancer.server.port=80"
 
     # par default, Traefik prend le premier port exposé comme port http
     # sinon, utiliser - "traefik.http.services.whoami.loadbalancer.server.port=8384"
