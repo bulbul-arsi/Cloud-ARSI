@@ -1,7 +1,7 @@
 ################### NEXTCLOUD #####################
 #
 #
-# ce script lance un  service nextcloud dans un docker swarm
+# ce script lance un service nextcloud dans un docker swarm
 # Lancement : 
 # docker stack deploy -c docker-compose.yml next
 #
@@ -17,7 +17,7 @@ services:
     networks:
       - frontend
   
-  deploy:
+    deploy:
       mode: global
       placement:
         constraints:
