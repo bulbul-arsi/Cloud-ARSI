@@ -8,8 +8,13 @@ services:
       - frontend
 
     deploy:
-      mode: replicated
-      replicas: 6
+      # mode: replicated
+      # replicas: 6
+      
+      mode: global
+      placement:
+        constraints:
+          - node.role == manager
 
       restart_policy:
         condition: on-failure
