@@ -1,0 +1,55 @@
+################### NEXTCLOUD ##########
+# ce script sére a lancer un nextcloud 
+# pour lancer le script il sufi just de taper "docker stack deploy -c docker-compose.yml  next"
+
+version: "3"
+services:
+  nextcloud:
+    image: nextcloud:20
+
+    volumes:
+      - /home/Cloud-ARSI/nextcloud/html:/var/www/html
+
+    networks:
+      - frontend
+
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role == manager
+
+
+      restart_policy:
+         condition: on-failure
+         max_attempts: 3
+
+      labels:
+        # ATTENTION, pensez a changer chaque "whoami" par le nom de votre service
+        - "traefik.enable=true"
+        - "traefik.docker.network=frontend"
+
+        # Changer l'adresse ici pour le http
+        - "traefik.http.routers.nextcloud-http.rule=Host(`nextcloud.arsi.tibillet.com`)"
+        - "traefik.http.routers.nextcloud-http.entrypoints=entrypoints-http"
+        - "traefik.http.routers.nextcloud-http.middlewares=redirect"
+
+        # Ligne pour forcer le redirect vers le https si le http est demandé.
+        - "traefik.http.middlewares.redirect.redirectscheme.scheme=https"
+
+        # Changer l'adresse ici pour le https
+        - "traefik.http.routers.nextcloud-https.rule=Host(`nextcloud.arsi.tibillet.com`)"
+        - "traefik.http.routers.nextcloud-https.entrypoints=entrypoints-https"
+        - "traefik.http.routers.nextcloud-https.tls.certresolver=myresolver"
+
+        # par default, Traefik prend le premier port exposé comme port http
+        # sinon, utiliser - "traefik.http.services.whoami.loadbalancer.server.port=8384"
+        - "traefik.http.services.nextcloud.loadbalancer.server.port=80"
+
+        # Pour ne pas basculer de conteneur si le cookie est le même :
+        - "traefik.http.services.nextcloud.loadbalancer.sticky.cookie=true"
+
+networks:
+  frontend:
+    external: true
+
