@@ -1,29 +1,30 @@
-################### NEXTCLOUD ##########
-# ce script sére a lancer un nextcloud 
-# pour lancer le script il sufi just de taper "docker stack deploy -c docker-compose.yml  next"
+################### NEXTCLOUD #####################
+#
+#
+# ce script lance un  service nextcloud dans un docker swarm
+# Lancement : 
+# docker stack deploy -c docker-compose.yml next
+#
+#
 
 version: "3"
 services:
   nextcloud:
+  
     image: nextcloud:20
-
     volumes:
       - /home/Cloud-ARSI/nextcloud/html:/var/www/html
-
     networks:
       - frontend
-
-    deploy:
+  
+  deploy:
       mode: global
       placement:
         constraints:
           - node.role == manager
-
-
       restart_policy:
          condition: on-failure
          max_attempts: 3
-
       labels:
         # ATTENTION, pensez a changer chaque "whoami" par le nom de votre service
         - "traefik.enable=true"
